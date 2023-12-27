@@ -26,9 +26,7 @@ const uploadPath = isProd
   ? path.join(__dirname, "..", "uploads/")
   : path.join(__dirname, "..", "..", "uploads/");
 
-app.use(
-  express.static(path.join(__dirname, "..", "..", "web-client", "build"))
-);
+app.use(express.static(webClientPath));
 
 app.get("/api/v1/shows", cors(), async (req, res) => {
   console.log("/api/v1/shows");
