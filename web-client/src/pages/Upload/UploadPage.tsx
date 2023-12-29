@@ -3,6 +3,7 @@ import { expressEndpoint } from "../../config";
 import { Link } from "react-router-dom";
 import css from "../../common/common.module.css";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import TopNav from "../../components/TopNav/TopNav";
 
 function UploadPage() {
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
@@ -40,16 +41,7 @@ function UploadPage() {
 
   return (
     <div>
-      <Link to={"/"} className={`${css["link-button"]}`}>
-        Home
-      </Link>
-      <Link to={"/shows"} className={`${css["link-button"]}`}>
-        Shows
-      </Link>
-      <Link to={"/upload"} className={`${css["link-button"]}`}>
-        Upload
-      </Link>
-      <hr />
+      <TopNav />
       <br />
       <div>
         <input

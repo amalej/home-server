@@ -1,0 +1,23 @@
+.show-card {
+  max-width: 200px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0.5em;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  background-color: #12121288;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  aspect-ratio: 0.8 / 1;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: medium;
+}
+
+.show-poster {
+  height: 100%;
+  width: 100%;
+}

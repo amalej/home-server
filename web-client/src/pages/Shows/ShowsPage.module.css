@@ -1,0 +1,85 @@
+.shows-page {
+  width: 100%;
+}
+
+.show-top-container {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.show-search-bar-container {
+  overflow: hidden;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  margin-left: 12px;
+  margin-right: 12px;
+  display: flex;
+  justify-content: center;
+  background-color: #12121288;
+  border: 1px solid #121212aa;
+  border-radius: 2px;
+}
+
+.show-search-bar {
+  margin-right: 4px;
+  width: auto;
+  width: calc(100%);
+  background-color: #12121288;
+  border: none;
+  color: white;
+  padding-left: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.show-search-bar:focus {
+  outline: none;
+}
+
+.show-search-bar-icon {
+  color: #ffffff;
+}
+
+.show-name-container {
+  margin-left: 12px;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.return-button {
+  padding: 8px 12px 8px 12px;
+  background-color: #12121288;
+  border-radius: 8px;
+}
+
+.table {
+  margin: 0px;
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-decoration: none;
+}
+
+.table td {
+  padding: 0;
+  margin: 0;
+}
+
+.episode {
+  margin: 5px;
+  padding: 8px 12px 8px 12px;
+  color: #ffffff;
+  background-color: #12121288;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: small;
+  display: flex;
+}

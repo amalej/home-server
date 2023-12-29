@@ -1,0 +1,19 @@
+.top-nav {
+  display: flex;
+  width: 100%;
+  background: #121212ff;
+}
+
+.links {
+  border-radius: 0px;
+  margin: 0px;
+  color: #ffffff;
+  padding: 16px 24px 12px 24px;
+  width: auto;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  letter-spacing: 0.5px;
+}
+
+.active {
+  font-weight: bold;
+}

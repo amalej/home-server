@@ -1,19 +1,13 @@
-import { Link } from "react-router-dom";
-import css from "../../common/common.module.css";
+import TopNav from "../../components/TopNav/TopNav";
+import hpCss from "./HomePage.module.css";
 
 function HomePage() {
   return (
     <div>
-      <br />
-      <Link to={"/"} className={`${css["link-button"]}`}>
-        Home
-      </Link>
-      <Link to={"/shows"} className={`${css["link-button"]}`}>
-        Shows
-      </Link>
-      <Link to={"/upload"} className={`${css["link-button"]}`}>
-        Upload
-      </Link>
+      <TopNav />
+      <div className={`${hpCss["message"]}`}>
+        This is the Home page. There is nothing here....yet
+      </div>
     </div>
   );
 }

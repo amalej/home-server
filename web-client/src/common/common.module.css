@@ -1,17 +1,8 @@
 .link-button {
-  margin: 5px;
-  padding: 8px 12px 8px 12px;
   color: #ffffff;
-  background-color: #12121288;
-  border-radius: 8px;
   text-decoration: none;
-  font-weight: 400;
   font-size: small;
-  display: flex;
-}
-
-.link-button-active {
-  border: 2px solid #84c9fb;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .input-file:focus + .input-file-label {
