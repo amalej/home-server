@@ -3,33 +3,23 @@ import path from "path";
 import cors from "cors";
 import fs from "fs";
 import {
-  findHostAddress,
+  loadShowPosterPath,
   loadShowsInParentDirectory,
   loadShowsParentDirectories,
   loadShowsPathsJson,
+  logToTerminal,
 } from "./utils";
-import multer from "multer";
 import "dotenv/config";
+import { hostAddress, serverEnv, webClientPath } from "./config";
+import { multerUpload } from "./multer-upload";
 
-const hostAddress = findHostAddress();
 const app = express();
-
-console.log("--------");
-
-const isProd = process.env.SERVER_ENVIRONMENT === "production";
-console.log("Server Env:", process.env.SERVER_ENVIRONMENT);
-
-const webClientPath = isProd
-  ? path.join(__dirname, "..", `${process.env.WEB_CLIENT_BUILD_DIR}`)
-  : path.join(__dirname, "..", "..", "web-client", "build");
-const uploadPath = isProd
-  ? path.join(__dirname, "..", "uploads/")
-  : path.join(__dirname, "..", "..", "uploads/");
 
 app.use(express.static(webClientPath));
 
 app.get("/api/v1/shows", cors(), async (req, res) => {
-  console.log("/api/v1/shows");
+  const api = "/api/v1/shows";
+  logToTerminal(api, "START");
   try {
     const showsJson = await loadShowsPathsJson();
     if (showsJson === null) {
@@ -54,14 +44,14 @@ app.get("/api/v1/shows", cors(), async (req, res) => {
 });
 
 app.get("/api/v1/shows(/*)?", cors(), async (req, res) => {
+  const api = "/api/v1/shows(/*)";
+  logToTerminal(api, "START");
   try {
-    console.log("/api/v1/shows(/*)");
     const mainPath = decodeURIComponent(req.path.replace("/api/v1/shows/", ""));
     const queries = req.query;
     const parent = queries["parent"] as string;
-    console.log(mainPath);
-    console.log("parent");
-    console.log(parent);
+    logToTerminal(api, "mainPath:", mainPath);
+    logToTerminal(api, "parent:", parent);
     const files = await loadShowsInParentDirectory(mainPath, parent);
     const sorted = files.sort((a, b) => {
       if (a.relativePath < b.relativePath) {
@@ -79,15 +69,31 @@ app.get("/api/v1/shows(/*)?", cors(), async (req, res) => {
   }
 });
 
-app.get("/watch", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+app.get("/api/v1/shows-poster(/*)?", cors(), async (req, res) => {
+  const api = "/api/v1/poster(/*)?";
+  logToTerminal(api, "START");
+  const showsJson = await loadShowsPathsJson();
+  const queries = req.query;
+  const showName = decodeURIComponent(queries["name"] as string);
+  const parent = queries["parent"] as string;
+  const showRootDirPath = path.join(showsJson![parent], showName);
+  const posterPath = await loadShowPosterPath(showRootDirPath);
+  logToTerminal(api, "showName:", showName);
+  logToTerminal(api, "posterPath:", posterPath);
+  if (posterPath === null) {
+    res.status(404).send("file-not-found");
+  } else {
+    const imageStream = fs.createReadStream(posterPath);
+    imageStream.pipe(res);
+  }
 });
 
-app.get("/video(/*)?", cors(), async (req, res) => {
+app.get("/api/v1/video(/*)?", cors(), async (req, res) => {
+  const api = "/api/v1/video(/*)?";
+  logToTerminal(api, "START");
   const startDate = new Date();
-  console.log(startDate);
+  logToTerminal(api, "startDate", startDate);
   const showsJson = await loadShowsPathsJson();
-  console.log("/video(/*)?");
   const range = req.headers.range as string;
   if (!range) {
     res.status(400).send("Requires Range header");
@@ -97,7 +103,6 @@ app.get("/video(/*)?", cors(), async (req, res) => {
   const relativePath = queries["relativePath"] as string;
   const videoPath = path.join(showsJson![parent], relativePath);
   const videoSize = fs.statSync(videoPath).size;
-  // const CHUNK_SIZE = 81920;
   const CHUNK_SIZE = 1638400;
   const start = Number(range.replace(/\D/g, ""));
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
@@ -109,33 +114,30 @@ app.get("/video(/*)?", cors(), async (req, res) => {
     "Content-Type": "video/mp4",
   };
   const endDate = new Date();
-  console.log(endDate);
-  console.log("chunks:", start, " => ", end);
-  console.log("percentage:", end / videoSize);
-  console.log("duration:", endDate.getTime() - startDate.getTime());
+  logToTerminal(api, "relativePath:", relativePath);
+  logToTerminal(api, "videoPath:", videoPath);
+  logToTerminal(api, "endDate:", endDate);
+  logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
+  logToTerminal(api, "percentage:", `${end / videoSize}`);
+  logToTerminal(api, "duration:", `${endDate.getTime() - startDate.getTime()}`);
   res.writeHead(206, headers);
   const videoStream = fs.createReadStream(videoPath, { start, end });
   videoStream.pipe(res);
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-const upload = multer({ storage: storage });
-app.post("/api/v1/upload", cors(), upload.single("file"), (req, res) => {
-  console.log("/api/v1/upload");
+app.post("/api/v1/upload", cors(), multerUpload.single("file"), (req, res) => {
+  const api = "/api/v1/upload";
+  logToTerminal(api, "START");
   res.json({ message: "File uploaded successfully!" });
 });
 
-app.get("*", cors(), (req, res) =>
-  res.sendFile(path.join(webClientPath, "index.html"))
-);
+app.get("*", cors(), (req, res) => {
+  const api = "*";
+  logToTerminal(api, "START");
+  res.sendFile(path.join(webClientPath, "index.html"));
+});
 
 app.listen(5000, () => {
+  console.log("server env:", serverEnv);
   console.log(`server started on ${hostAddress}:5000`);
 });
