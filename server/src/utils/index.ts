@@ -48,9 +48,13 @@ export async function loadShowsParentDirectories(
           parent: parent,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       // TODO: try and return some error.
-      console.log(error);
+      if (error.code === "ENOENT") {
+        console.log(error.message);
+      } else {
+        console.log(error);
+      }
     }
   }
   return pathArr;

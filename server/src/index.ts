@@ -10,16 +10,19 @@ import {
   logToTerminal,
 } from "./utils";
 import "dotenv/config";
-import { hostAddress, serverEnv, webClientPath } from "./config";
+import { corsOptions, hostAddress, serverEnv, webClientPath } from "./config";
 import { multerUpload } from "./multer-upload";
 
 const app = express();
 
 app.use(express.static(webClientPath));
+app.use(cors(corsOptions));
 
-app.get("/api/v1/shows", cors(), async (req, res) => {
+app.get("/api/v1/shows", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/shows";
   logToTerminal(api, "START");
+  const userId = req.headers["x-user-id"] || null;
+  logToTerminal(api, "userId:", userId);
   try {
     const showsJson = await loadShowsPathsJson();
     if (showsJson === null) {
@@ -43,9 +46,11 @@ app.get("/api/v1/shows", cors(), async (req, res) => {
   }
 });
 
-app.get("/api/v1/shows(/*)?", cors(), async (req, res) => {
+app.get("/api/v1/shows(/*)?", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/shows(/*)";
   logToTerminal(api, "START");
+  const userId = req.headers["x-user-id"] || null;
+  logToTerminal(api, "userId:", userId);
   try {
     const mainPath = decodeURIComponent(req.path.replace("/api/v1/shows/", ""));
     const queries = req.query;
@@ -69,7 +74,7 @@ app.get("/api/v1/shows(/*)?", cors(), async (req, res) => {
   }
 });
 
-app.get("/api/v1/shows-poster(/*)?", cors(), async (req, res) => {
+app.get("/api/v1/shows-poster(/*)?", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/poster(/*)?";
   logToTerminal(api, "START");
   const showsJson = await loadShowsPathsJson();
@@ -83,12 +88,16 @@ app.get("/api/v1/shows-poster(/*)?", cors(), async (req, res) => {
   if (posterPath === null) {
     res.status(404).send("file-not-found");
   } else {
-    const imageStream = fs.createReadStream(posterPath);
-    imageStream.pipe(res);
+    try {
+      const imageStream = fs.createReadStream(posterPath);
+      imageStream.pipe(res);
+    } catch (error) {
+      res.status(404).send("file-not-found");
+    }
   }
 });
 
-app.get("/api/v1/video(/*)?", cors(), async (req, res) => {
+app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/video(/*)?";
   logToTerminal(api, "START");
   const startDate = new Date();
@@ -102,36 +111,50 @@ app.get("/api/v1/video(/*)?", cors(), async (req, res) => {
   const parent = queries["parent"] as string;
   const relativePath = queries["relativePath"] as string;
   const videoPath = path.join(showsJson![parent], relativePath);
-  const videoSize = fs.statSync(videoPath).size;
-  const CHUNK_SIZE = 1638400;
-  const start = Number(range.replace(/\D/g, ""));
-  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-  const contentLength = end - start + 1;
-  const headers = {
-    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-    "Accept-Ranges": "bytes",
-    "Content-Length": contentLength,
-    "Content-Type": "video/mp4",
-  };
-  const endDate = new Date();
-  logToTerminal(api, "relativePath:", relativePath);
-  logToTerminal(api, "videoPath:", videoPath);
-  logToTerminal(api, "endDate:", endDate);
-  logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
-  logToTerminal(api, "percentage:", `${end / videoSize}`);
-  logToTerminal(api, "duration:", `${endDate.getTime() - startDate.getTime()}`);
-  res.writeHead(206, headers);
-  const videoStream = fs.createReadStream(videoPath, { start, end });
-  videoStream.pipe(res);
+  try {
+    const videoSize = fs.statSync(videoPath).size;
+    const CHUNK_SIZE = 1638400;
+    const start = Number(range.replace(/\D/g, ""));
+    logToTerminal(api, "range:", range);
+    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+    const contentLength = end - start + 1;
+    const headers = {
+      "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": contentLength,
+      "Content-Type": "video/mp4",
+    };
+    const endDate = new Date();
+    logToTerminal(api, "relativePath:", relativePath);
+    logToTerminal(api, "videoPath:", videoPath);
+    logToTerminal(api, "endDate:", endDate);
+    logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
+    logToTerminal(api, "percentage:", `${end / videoSize}`);
+    logToTerminal(
+      api,
+      "duration:",
+      `${endDate.getTime() - startDate.getTime()}`
+    );
+    res.writeHead(206, headers);
+    const videoStream = fs.createReadStream(videoPath, { start, end });
+    videoStream.pipe(res);
+  } catch (error) {
+    res.status(404).send("file-not-found");
+  }
 });
 
-app.post("/api/v1/upload", cors(), multerUpload.single("file"), (req, res) => {
-  const api = "/api/v1/upload";
-  logToTerminal(api, "START");
-  res.json({ message: "File uploaded successfully!" });
-});
+app.post(
+  "/api/v1/upload",
+  cors(corsOptions),
+  multerUpload.single("file"),
+  (req, res) => {
+    const api = "/api/v1/upload";
+    logToTerminal(api, "START");
+    res.json({ message: "File uploaded successfully!" });
+  }
+);
 
-app.get("*", cors(), (req, res) => {
+app.get("*", cors(corsOptions), (req, res) => {
   const api = "*";
   logToTerminal(api, "START");
   res.sendFile(path.join(webClientPath, "index.html"));
