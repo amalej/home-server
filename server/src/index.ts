@@ -12,6 +12,7 @@ import {
 import "dotenv/config";
 import { corsOptions, hostAddress, serverEnv, webClientPath } from "./config";
 import { multerUpload } from "./multer-upload";
+import { stat } from "fs/promises";
 
 const app = express();
 
@@ -106,13 +107,15 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const range = req.headers.range as string;
   if (!range) {
     res.status(400).send("Requires Range header");
+    return;
   }
   const queries = req.query;
   const parent = queries["parent"] as string;
   const relativePath = queries["relativePath"] as string;
   const videoPath = path.join(showsJson![parent], relativePath);
   try {
-    const videoSize = fs.statSync(videoPath).size;
+    const video = await stat(videoPath);
+    const videoSize = video.size;
     const CHUNK_SIZE = 1638400;
     const start = Number(range.replace(/\D/g, ""));
     logToTerminal(api, "range:", range);
@@ -141,6 +144,19 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   } catch (error) {
     res.status(404).send("file-not-found");
   }
+});
+
+app.post("/api/v1/watching(/*)?", cors(corsOptions), (req, res) => {
+  const api = "/api/v1/watching(/*)?";
+  const userId = req.headers["x-user-id"] || null;
+  const queries = req.query;
+  const relativePath = decodeURIComponent(queries["relativePath"] as string);
+  const parent = queries["parent"] as string;
+  logToTerminal(api, "START");
+  logToTerminal(api, "userId:", userId);
+  logToTerminal(api, "relativePath:", relativePath);
+  logToTerminal(api, "parent:", parent);
+  res.json({ message: "File uploaded successfully!" });
 });
 
 app.post(

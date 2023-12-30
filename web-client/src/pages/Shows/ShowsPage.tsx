@@ -78,6 +78,24 @@ function ShowsPage() {
     return `${expressEndpoint}/api/v1/video?relativePath=${relativePath}&parent=${parent}`;
   }
 
+  async function postUpdateWatching() {
+    const queryParameters = new URLSearchParams(window.location.search);
+    const relativePath = window.location.href.replace(
+      /(?=http)(.*)(?<=shows)|\?(.*)/gm,
+      ""
+    );
+    const parent = queryParameters.get("parent");
+    const fetchEndpoint = `${expressEndpoint}/api/v1/watching?relativePath=${relativePath}&parent=${parent}`;
+    fetch(fetchEndpoint, {
+      method: "post",
+      headers: {
+        "x-user-id": getUserId(),
+      },
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
   function isActive(linkPath: string) {
     const relativePath = window.location.href.replace(
       /(?=http)(.*)(?<=shows)|\?(.*)/gm,
@@ -254,7 +272,14 @@ function ShowsPage() {
       {renderParentLink()}
       {hasVideo ? (
         <>
-          <video id="videoPlayer" width="100%" controls>
+          <video
+            id="videoPlayer"
+            width="100%"
+            controls
+            onProgress={(e) => {
+              postUpdateWatching();
+            }}
+          >
             <source src={getVideoUrl()} type="video/mp4" />
           </video>
           <div className={`${spCss["prev-next-nav"]}`}>

@@ -1,5 +1,4 @@
-import { existsSync, readdirSync } from "fs";
-import { readFile } from "fs/promises";
+import { readFile, readdir, stat } from "fs/promises";
 import path from "path";
 import { ShowDirectory, ShowParentDirectory } from "../types";
 import { networkInterfaces } from "os";
@@ -17,7 +16,9 @@ export async function loadShowsPathsJson(): Promise<ShowParentDirectory | null> 
 
     // Traverse up the directory till a "shows-paths.json" file is found.
     for (let i = 0; i < totalPathSegment; i++) {
-      if (!existsSync(showPath)) {
+      const fileExists = async (path: string) =>
+        !!(await stat(path).catch((e) => false));
+      if (!(await fileExists(showPath))) {
         showPath = path.join(currentPath, "shows-paths.json");
         currentPath = removeLastPath(currentPath);
       } else {
@@ -40,7 +41,7 @@ export async function loadShowsParentDirectories(
     const parent = directoryNames[i];
     const parentPath = showsJson[parent];
     try {
-      const filesInDir = readdirSync(parentPath);
+      const filesInDir = await readdir(parentPath);
       for (let j = 0; j < filesInDir.length; j++) {
         const _file = filesInDir[j];
         pathArr.push({
@@ -67,7 +68,7 @@ export async function loadShowsInParentDirectory(
   const showsJson = await loadShowsPathsJson();
   const fileArr = [];
   try {
-    const files = readdirSync(path.join(showsJson![parent], showPath));
+    const files = await readdir(path.join(showsJson![parent], showPath));
     for (let i = 0; i < files.length; i++) {
       if (
         files[i].includes(".jpg") ||
@@ -113,7 +114,7 @@ export async function loadShowPosterPath(
   showRootDirPath: string
 ): Promise<string | null> {
   try {
-    const files = readdirSync(showRootDirPath);
+    const files = await readdir(showRootDirPath);
     for (let file of files) {
       if (file.includes("poster.")) {
         return path.join(showRootDirPath, file);
