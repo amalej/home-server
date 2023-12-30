@@ -6,7 +6,6 @@ node_modules
 # testing
 /shows
 /coverage
-/uploads
 
 # production
 build
