@@ -4,6 +4,8 @@
   "description": "Home Server",
   "main": "builder/index.js",
   "scripts": {
+    "build": "node builder/index.js",
+    "build:clean": "node builder/clean-build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
