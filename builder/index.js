@@ -66,7 +66,7 @@ console.log(`Built "web-client"`)
 
 console.log(`Building "server"`)
 wrapCatch(`cd ${path.join(__dirname, "..", "server")} & npm run build`)
-console.log(`Built "web-client"`)
+console.log(`Built "server"`)
 
 console.log(`Create ".env"`)
 fs.writeFileSync(path.join(outputDir, ".env"), `SERVER_ENVIRONMENT=production
