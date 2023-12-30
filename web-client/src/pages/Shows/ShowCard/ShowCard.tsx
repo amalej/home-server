@@ -16,7 +16,6 @@ function ShowCard(props: Props): JSX.Element {
   function isInViewport() {
     if (cardElement !== null && cardElement.current !== null) {
       const rect = cardElement.current.getBoundingClientRect();
-      console.log(rect.top);
       return (
         (rect.top >= 0 && rect.bottom <= window.innerHeight) ||
         (rect.top >= 0 && rect.top <= window.innerHeight)
@@ -31,30 +30,21 @@ function ShowCard(props: Props): JSX.Element {
     const fetchEndpoint = `${expressEndpoint}/api/v1/shows-poster?name=${name}&parent=${parent}`;
     try {
       if (isInViewport()) {
-        console.log(cardElement.current);
-        console.log("loadImage");
-        console.log(isInViewport());
         setIsReqestMade(true);
         const res = await fetch(fetchEndpoint);
         if (res.status === 200) {
-          console.log(res);
-          console.log(res.body);
           const readableSteam = await res.blob();
           const src = URL.createObjectURL(readableSteam);
           setImageSrc(src);
-          console.log(src);
         }
       }
-    } catch (err) {
-      // console.log(err);
-    }
+    } catch (err) {}
   }
 
   useEffect(() => {
     loadImage();
   }, [isVisible]);
 
-  // loadImage();
   return (
     <div className={`${scCss["show-card"]}`} ref={cardElement}>
       {imageSrc === null ? (

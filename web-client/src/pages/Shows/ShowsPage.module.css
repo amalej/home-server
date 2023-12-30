@@ -72,7 +72,7 @@
   margin: 0;
 }
 
-.episode {
+.season-episode {
   margin: 5px;
   padding: 8px 12px 8px 12px;
   color: #ffffff;
@@ -82,4 +82,24 @@
   font-weight: 400;
   font-size: small;
   display: flex;
+}
+
+.active {
+  border: 1px solid #0288d1;
+}
+
+.prev-next-nav {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  /* background-color: #0288d1; */
+}
+
+.prev-next-nav-button {
+  border-radius: 4px;
+  margin: 8px;
+  width: 100%;
+  max-width: 50%;
+  background: #12121288;
+  padding: 8px 12px 8px 12px;
 }

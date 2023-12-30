@@ -8,6 +8,7 @@ import TopNav from "../../components/TopNav/TopNav";
 import ShowCard from "./ShowCard/ShowCard";
 import spCss from "./ShowsPage.module.css";
 import SearchIcon from "@mui/icons-material/Search";
+import { getUserId } from "../../util";
 
 const SHOW_CARD_WIDTH = 150;
 
@@ -32,7 +33,6 @@ function ShowsPage() {
       window.location.href.includes(".mkv")
     ) {
       _hasVideo = true;
-      // setHasVideo(_hasVideo);
       const relativePathSplit = relativePath.split("/");
       relativePathSplit.pop();
       relativePath = relativePathSplit.join("/");
@@ -41,7 +41,11 @@ function ShowsPage() {
     const parent = queryParameters.get("parent");
     const query = parent !== null ? `?parent=${parent}` : "";
     const fetchEndpoint = `${expressEndpoint}/api/v1/shows${relativePath}${query}`;
-    fetch(fetchEndpoint)
+    fetch(fetchEndpoint, {
+      headers: {
+        "x-user-id": getUserId(),
+      },
+    })
       .then(async (response) => {
         const res = response;
         const textContent = await res.text();
@@ -176,14 +180,88 @@ function ShowsPage() {
     }
   }
 
+  function renderPrevButton() {
+    const relativePath = window.location.href.replace(
+      /(?=http)(.*)(?<=shows\/)|\?(.*)/gm,
+      ""
+    );
+    let pathIndex: number | null = null;
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      if (path.relativePath.replaceAll("\\", "/") === relativePath) {
+        pathIndex = i;
+      }
+    }
+
+    if (pathIndex !== null && pathIndex > 0) {
+      return (
+        <Link
+          to={addParentQuery(
+            paths[pathIndex - 1].relativePath,
+            paths[pathIndex - 1].parent
+          )}
+          className={`${css["link-button"]} ${spCss["prev-next-nav-button"]}`}
+        >
+          Prev
+        </Link>
+      );
+    } else {
+      return (
+        <div
+          className={`${spCss["prev-next-nav-button"]} ${css["hidden"]}`}
+        ></div>
+      );
+    }
+  }
+
+  function renderNextButton() {
+    const relativePath = window.location.href.replace(
+      /(?=http)(.*)(?<=shows\/)|\?(.*)/gm,
+      ""
+    );
+    let pathIndex: number | null = null;
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      if (path.relativePath.replaceAll("\\", "/") === relativePath) {
+        pathIndex = i;
+      }
+    }
+
+    if (pathIndex !== null && pathIndex < paths.length - 1) {
+      return (
+        <Link
+          to={addParentQuery(
+            paths[pathIndex + 1].relativePath,
+            paths[pathIndex + 1].parent
+          )}
+          className={`${css["link-button"]} ${spCss["prev-next-nav-button"]}`}
+        >
+          Next
+        </Link>
+      );
+    } else {
+      return (
+        <div
+          className={`${spCss["prev-next-nav-button"]} ${css["hidden"]}`}
+        ></div>
+      );
+    }
+  }
+
   return (
     <div className={`${spCss["shows-page"]}`}>
       <TopNav />
       {renderParentLink()}
       {hasVideo ? (
-        <video id="videoPlayer" width="100%" controls>
-          <source src={getVideoUrl()} type="video/mp4" />
-        </video>
+        <>
+          <video id="videoPlayer" width="100%" controls>
+            <source src={getVideoUrl()} type="video/mp4" />
+          </video>
+          <div className={`${spCss["prev-next-nav"]}`}>
+            {renderPrevButton()}
+            {renderNextButton()}
+          </div>
+        </>
       ) : (
         ""
       )}
@@ -231,7 +309,9 @@ function ShowsPage() {
               <div key={_path.relativePath}>
                 <Link
                   to={addParentQuery(_path.relativePath, _path.parent)}
-                  className={`${css["link-button"]} ${spCss["episode"]}`}
+                  className={`${css["link-button"]} ${
+                    spCss["season-episode"]
+                  } ${isActive(_path.relativePath) ? spCss["active"] : ""}`}
                 >
                   {getLastPath(_path.relativePath)}
                 </Link>

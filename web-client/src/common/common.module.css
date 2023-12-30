@@ -53,3 +53,8 @@
   font-weight: 700;
   color: white;
 }
+
+.hidden {
+  visibility: hidden;
+  background: transparent;
+}
