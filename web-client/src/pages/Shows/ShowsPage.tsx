@@ -199,14 +199,16 @@ function ShowsPage() {
   }
 
   function renderPrevButton() {
-    const relativePath = window.location.href.replace(
-      /(?=http)(.*)(?<=shows\/)|\?(.*)/gm,
-      ""
+    const relativePath = decodeURIComponent(
+      window.location.href.replace(/(?=http)(.*)(?<=shows\/)|\?(.*)/gm, "")
     );
     let pathIndex: number | null = null;
+    console.log("------");
+    console.log(relativePath);
     for (let i = 0; i < paths.length; i++) {
       const path = paths[i];
-      if (path.relativePath.replaceAll("\\", "/") === relativePath) {
+      console.log(path.relativePath);
+      if (relativePath.includes(path.relativePath.replaceAll("\\", "/"))) {
         pathIndex = i;
       }
     }
@@ -233,14 +235,13 @@ function ShowsPage() {
   }
 
   function renderNextButton() {
-    const relativePath = window.location.href.replace(
-      /(?=http)(.*)(?<=shows\/)|\?(.*)/gm,
-      ""
+    const relativePath = decodeURIComponent(
+      window.location.href.replace(/(?=http)(.*)(?<=shows\/)|\?(.*)/gm, "")
     );
     let pathIndex: number | null = null;
     for (let i = 0; i < paths.length; i++) {
       const path = paths[i];
-      if (path.relativePath.replaceAll("\\", "/") === relativePath) {
+      if (relativePath.includes(path.relativePath.replaceAll("\\", "/"))) {
         pathIndex = i;
       }
     }

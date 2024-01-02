@@ -105,6 +105,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   logToTerminal(api, "startDate", startDate);
   const showsJson = await loadShowsPathsJson();
   const range = req.headers.range as string;
+  logToTerminal(api, "range:", range);
   if (!range) {
     res.status(400).send("Requires Range header");
     return;
@@ -116,9 +117,8 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   try {
     const video = await stat(videoPath);
     const videoSize = video.size;
-    const CHUNK_SIZE = 1638400;
+    const CHUNK_SIZE = 1048576; // 1 Mb
     const start = Number(range.replace(/\D/g, ""));
-    logToTerminal(api, "range:", range);
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
     const headers = {
@@ -131,7 +131,9 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
     logToTerminal(api, "relativePath:", relativePath);
     logToTerminal(api, "videoPath:", videoPath);
     logToTerminal(api, "endDate:", endDate);
+    logToTerminal(api, "range:", range);
     logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
+    logToTerminal(api, "chunkSize:", `${contentLength}`);
     logToTerminal(api, "percentage:", `${end / videoSize}`);
     logToTerminal(
       api,
