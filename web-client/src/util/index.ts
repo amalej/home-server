@@ -10,6 +10,7 @@ function makeId(length: number) {
   }
   return result;
 }
+
 export function getUserId() {
   let userId = localStorage.getItem("userId");
   if (userId === null) {
@@ -17,4 +18,24 @@ export function getUserId() {
     localStorage.setItem("userId", userId);
   }
   return userId;
+}
+
+export function resetActiveMovie(movieName: string) {
+  localStorage.setItem("activeMovie", movieName);
+  localStorage.setItem("activevMovieTime", "0");
+}
+
+export function setActiveMovieTime(seconds: number) {
+  localStorage.setItem("activevMovieTime", seconds.toString());
+}
+
+export function getActiveMovieData() {
+  const movieName = localStorage.getItem("activeMovie");
+  const activevMovieTime = parseInt(
+    localStorage.getItem("activevMovieTime") || "0"
+  );
+  return {
+    name: movieName,
+    time: activevMovieTime,
+  };
 }

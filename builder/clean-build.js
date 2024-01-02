@@ -84,6 +84,9 @@ fs.writeFileSync(path.join(outputDir, "package.json"), `{
   "version": "1.0.0",
   "description": "Home Server",
   "main": "server-build/index.js",
+  "scripts": {
+    "start": "npm install & node ."
+  },
   "dependencies": ${JSON.stringify({ ...webClientDependencies, ...serverDependencies }, null, 4)}
 }`);
 

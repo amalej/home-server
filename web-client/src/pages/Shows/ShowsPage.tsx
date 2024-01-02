@@ -9,6 +9,7 @@ import ShowCard from "./ShowCard/ShowCard";
 import spCss from "./ShowsPage.module.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { getUserId } from "../../util";
+import VideoWidget from "./VideoWidget/VideoWidget";
 
 const SHOW_CARD_WIDTH = 150;
 
@@ -66,34 +67,6 @@ function ShowsPage() {
 
   function addParentQuery(relativePath: string, parent: string) {
     return `${relativePath}?parent=${parent}`;
-  }
-
-  function getVideoUrl() {
-    const queryParameters = new URLSearchParams(window.location.search);
-    const relativePath = window.location.href.replace(
-      /(?=http)(.*)(?<=shows)|\?(.*)/gm,
-      ""
-    );
-    const parent = queryParameters.get("parent");
-    return `${expressEndpoint}/api/v1/video?relativePath=${relativePath}&parent=${parent}`;
-  }
-
-  async function postUpdateWatching() {
-    const queryParameters = new URLSearchParams(window.location.search);
-    const relativePath = window.location.href.replace(
-      /(?=http)(.*)(?<=shows)|\?(.*)/gm,
-      ""
-    );
-    const parent = queryParameters.get("parent");
-    const fetchEndpoint = `${expressEndpoint}/api/v1/watching?relativePath=${relativePath}&parent=${parent}`;
-    fetch(fetchEndpoint, {
-      method: "post",
-      headers: {
-        "x-user-id": getUserId(),
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
   }
 
   function isActive(linkPath: string) {
@@ -203,11 +176,8 @@ function ShowsPage() {
       window.location.href.replace(/(?=http)(.*)(?<=shows\/)|\?(.*)/gm, "")
     );
     let pathIndex: number | null = null;
-    console.log("------");
-    console.log(relativePath);
     for (let i = 0; i < paths.length; i++) {
       const path = paths[i];
-      console.log(path.relativePath);
       if (relativePath.includes(path.relativePath.replaceAll("\\", "/"))) {
         pathIndex = i;
       }
@@ -273,16 +243,7 @@ function ShowsPage() {
       {renderParentLink()}
       {hasVideo ? (
         <>
-          <video
-            id="videoPlayer"
-            width="100%"
-            controls
-            onProgress={(e) => {
-              postUpdateWatching();
-            }}
-          >
-            <source src={getVideoUrl()} type="video/mp4" />
-          </video>
+          <VideoWidget />
           <div className={`${spCss["prev-next-nav"]}`}>
             {renderPrevButton()}
             {renderNextButton()}

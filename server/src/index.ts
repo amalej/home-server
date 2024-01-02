@@ -13,6 +13,11 @@ import "dotenv/config";
 import { corsOptions, hostAddress, serverEnv, webClientPath } from "./config";
 import { multerUpload } from "./multer-upload";
 import { stat } from "fs/promises";
+import {
+  deleteUserData,
+  getUserDataMap,
+  setUserWatchingShowData,
+} from "./user-data";
 
 const app = express();
 
@@ -102,10 +107,8 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/video(/*)?";
   logToTerminal(api, "START");
   const startDate = new Date();
-  logToTerminal(api, "startDate", startDate);
   const showsJson = await loadShowsPathsJson();
   const range = req.headers.range as string;
-  logToTerminal(api, "range:", range);
   if (!range) {
     res.status(400).send("Requires Range header");
     return;
@@ -114,6 +117,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const parent = queries["parent"] as string;
   const relativePath = queries["relativePath"] as string;
   const videoPath = path.join(showsJson![parent], relativePath);
+  const userId = queries["uid"] || null;
   try {
     const video = await stat(videoPath);
     const videoSize = video.size;
@@ -121,6 +125,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
+    const percentLoaded = (end / videoSize).toFixed(2);
     const headers = {
       "Content-Range": `bytes ${start}-${end}/${videoSize}`,
       "Accept-Ranges": "bytes",
@@ -128,37 +133,29 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
       "Content-Type": "video/mp4",
     };
     const endDate = new Date();
-    logToTerminal(api, "relativePath:", relativePath);
+    logToTerminal(api, "userId:", userId);
     logToTerminal(api, "videoPath:", videoPath);
+    logToTerminal(api, "startDate", startDate);
     logToTerminal(api, "endDate:", endDate);
     logToTerminal(api, "range:", range);
     logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
     logToTerminal(api, "chunkSize:", `${contentLength}`);
-    logToTerminal(api, "percentage:", `${end / videoSize}`);
+    logToTerminal(api, "percentage:", `${percentLoaded}`);
     logToTerminal(
       api,
       "duration:",
       `${endDate.getTime() - startDate.getTime()}`
     );
+
+    if (typeof userId === "string") {
+      setUserWatchingShowData(userId, relativePath, parseFloat(percentLoaded));
+    }
     res.writeHead(206, headers);
     const videoStream = fs.createReadStream(videoPath, { start, end });
     videoStream.pipe(res);
   } catch (error) {
     res.status(404).send("file-not-found");
   }
-});
-
-app.post("/api/v1/watching(/*)?", cors(corsOptions), (req, res) => {
-  const api = "/api/v1/watching(/*)?";
-  const userId = req.headers["x-user-id"] || null;
-  const queries = req.query;
-  const relativePath = decodeURIComponent(queries["relativePath"] as string);
-  const parent = queries["parent"] as string;
-  logToTerminal(api, "START");
-  logToTerminal(api, "userId:", userId);
-  logToTerminal(api, "relativePath:", relativePath);
-  logToTerminal(api, "parent:", parent);
-  res.json({ message: "File uploaded successfully!" });
 });
 
 app.post(
@@ -171,6 +168,24 @@ app.post(
     res.json({ message: "File uploaded successfully!" });
   }
 );
+
+app.get("/api/v1/user-data", cors(corsOptions), (req, res) => {
+  const api = "/api/v1/user-data";
+  logToTerminal(api, "START");
+  const userDataMap = getUserDataMap();
+  res.type("json").send(userDataMap);
+});
+
+app.delete("/api/v1/user-data", cors(corsOptions), (req, res) => {
+  const api = "/api/v1/user-data";
+  logToTerminal(api, "START");
+  const queries = req.query;
+  const userId = queries["uid"] || null;
+  if (typeof userId === "string") {
+    deleteUserData(userId);
+  }
+  res.send("user-data-deleted");
+});
 
 app.get("*", cors(corsOptions), (req, res) => {
   const api = "*";
