@@ -12,17 +12,20 @@ import {
 import "dotenv/config";
 import { corsOptions, hostAddress, serverEnv, webClientPath } from "./config";
 import { multerUpload } from "./multer-upload";
-import { stat } from "fs/promises";
+import { readdir, stat } from "fs/promises";
 import {
   deleteUserData,
   getUserDataMap,
   setUserWatchingShowData,
 } from "./user-data";
+import api from "./api";
 
 const app = express();
 
 app.use(express.static(webClientPath));
 app.use(cors(corsOptions));
+
+// app.use("/", api);
 
 app.get("/api/v1/shows", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/shows";
@@ -121,7 +124,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   try {
     const video = await stat(videoPath);
     const videoSize = video.size;
-    const CHUNK_SIZE = 1048576; // 1 Mb
+    const CHUNK_SIZE = 1048576 * 2; // 1 Mb
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
@@ -155,6 +158,42 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
     videoStream.pipe(res);
   } catch (error) {
     res.status(404).send("file-not-found");
+  }
+});
+
+app.get("/api/v1/subtitles", cors(corsOptions), async (req, res) => {
+  const queries = req.query;
+  const parent = queries["parent"] as string;
+  const relativePath = queries["relativePath"] as string;
+  const showsJson = await loadShowsPathsJson();
+  try {
+    const relativePathSplit = relativePath.split("/");
+    relativePathSplit.pop();
+    const parentPath = path.join(showsJson![parent], ...relativePathSplit);
+    const files = await readdir(parentPath);
+    const subtitleFiles: Array<string> = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.includes(".vtt")) {
+        subtitleFiles.push(path.join(...relativePathSplit, file));
+      }
+    }
+    res.send(subtitleFiles);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/api/v1/subtitle-file(/*)?", cors(corsOptions), async (req, res) => {
+  const queries = req.query;
+  const parent = queries["parent"] as string;
+  const relativePath = queries["relativePath"] as string;
+  const showsJson = await loadShowsPathsJson();
+  const subtitlePath = path.join(showsJson![parent], relativePath);
+  try {
+    res.sendFile(subtitlePath);
+  } catch (error) {
+    console.log(error);
   }
 });
 
