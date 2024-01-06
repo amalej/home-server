@@ -103,3 +103,7 @@
   background: #12121288;
   padding: 8px 12px 8px 12px;
 }
+
+.last-watched {
+  border: 2px solid #02d16aBB;
+}

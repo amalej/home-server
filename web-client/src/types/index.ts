@@ -10,3 +10,8 @@ export interface UserData {
     percentLoaded: number;
   };
 }
+
+export interface ShowSubtitleData {
+  path: string;
+  label: string;
+}

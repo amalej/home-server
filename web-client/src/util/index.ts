@@ -29,7 +29,7 @@ export function setActiveMovieTime(seconds: number) {
   localStorage.setItem("activevMovieTime", seconds.toString());
 }
 
-export function getActiveMovieData() {
+export function getActiveShowData() {
   const movieName = localStorage.getItem("activeMovie");
   const activevMovieTime = parseInt(
     localStorage.getItem("activevMovieTime") || "0"

@@ -8,7 +8,7 @@ import TopNav from "../../components/TopNav/TopNav";
 import ShowCard from "./ShowCard/ShowCard";
 import spCss from "./ShowsPage.module.css";
 import SearchIcon from "@mui/icons-material/Search";
-import { getUserId } from "../../util";
+import { getActiveShowData, getUserId } from "../../util";
 import VideoWidget from "./VideoWidget/VideoWidget";
 
 const SHOW_CARD_WIDTH = 150;
@@ -18,6 +18,7 @@ function ShowsPage() {
   const location = useLocation();
   const [paths, setPaths] = useState<Array<ShowDirectory>>([]);
   const [hasVideo, setHasVideo] = useState(false);
+  const activeShowData = getActiveShowData();
 
   useEffect(() => {
     let _hasVideo = false;
@@ -51,6 +52,7 @@ function ShowsPage() {
         const res = response;
         const textContent = await res.text();
         const _paths: Array<ShowDirectory> = JSON.parse(textContent);
+        // console.log(textContent);
         setPaths(_paths);
       })
       .catch((err) => {
@@ -58,6 +60,22 @@ function ShowsPage() {
       });
     setHasVideo(_hasVideo);
   }, [location]);
+
+  function isLastWatchedShow(showPath: string) {
+    // console.log(decodeURIComponent(activeShowData.name || ""));
+    // console.log(showPath.replaceAll("\\", "/"));
+    // console.log(
+    //   showPath.replaceAll("\\", "/") ===
+    //     decodeURIComponent(activeShowData.name || "")
+    // );
+    if (activeShowData.name !== null) {
+      return decodeURIComponent(activeShowData.name).includes(
+        showPath.replaceAll("\\", "/")
+      );
+    } else {
+      return false;
+    }
+  }
 
   function getParentPath() {
     const paths = window.location.href.split("/");
@@ -298,7 +316,11 @@ function ShowsPage() {
                   to={addParentQuery(_path.relativePath, _path.parent)}
                   className={`${css["link-button"]} ${
                     spCss["season-episode"]
-                  } ${isActive(_path.relativePath) ? spCss["active"] : ""}`}
+                  } ${isActive(_path.relativePath) ? spCss["active"] : ""} ${
+                    isLastWatchedShow(_path.relativePath) && !hasVideo
+                      ? spCss["last-watched"]
+                      : ""
+                  }`}
                 >
                   {getLastPath(_path.relativePath)}
                 </Link>
