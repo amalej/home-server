@@ -124,7 +124,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   try {
     const video = statSync(videoPath);
     const videoSize = video.size;
-    const CHUNK_SIZE = 1_000_000;
+    const CHUNK_SIZE = video.size;
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
@@ -141,7 +141,7 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
     // logToTerminal(api, "startDate", startDate);
     // logToTerminal(api, "endDate:", endDate);
     // logToTerminal(api, "range:", range);
-    // logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
+    logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
     // logToTerminal(api, "chunkSize:", `${contentLength}`);
     // logToTerminal(api, "percentage:", `${percentLoaded}`);
     // logToTerminal(
