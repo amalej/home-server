@@ -25,7 +25,7 @@ function VideoWidget() {
     [count, setCount] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => ticking && setCount(count + 1), 1000);
+    const timer = setTimeout(() => ticking && setCount(count + 1), 2500);
     return () => clearTimeout(timer);
   }, [count, ticking]);
 
@@ -126,8 +126,10 @@ function VideoWidget() {
           }
           setShowButton(false);
         }}
+        key={"video-widget"}
         ref={videoRef}
         width="100%"
+        preload="auto"
         controls
       >
         <source src={getVideoUrl()} type="video/mp4" />

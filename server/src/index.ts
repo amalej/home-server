@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
-import fs from "fs";
+import fs, { statSync } from "fs";
 import {
   loadShowPosterPath,
   loadShowsInParentDirectory,
@@ -109,7 +109,7 @@ app.get("/api/v1/shows-poster(/*)?", cors(corsOptions), async (req, res) => {
 app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const api = "/api/v1/video(/*)?";
   logToTerminal(api, "START");
-  const startDate = new Date();
+  // const startDate = new Date();
   const showsJson = await loadShowsPathsJson();
   const range = req.headers.range as string;
   if (!range) {
@@ -122,9 +122,9 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
   const videoPath = path.join(showsJson![parent], relativePath);
   const userId = queries["uid"] || null;
   try {
-    const video = await stat(videoPath);
+    const video = statSync(videoPath);
     const videoSize = video.size;
-    const CHUNK_SIZE = 1048576 * 2; // 1 Mb
+    const CHUNK_SIZE = 1_000_000;
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
@@ -135,20 +135,20 @@ app.get("/api/v1/video(/*)?", cors(corsOptions), async (req, res) => {
       "Content-Length": contentLength,
       "Content-Type": "video/mp4",
     };
-    const endDate = new Date();
-    logToTerminal(api, "userId:", userId);
-    logToTerminal(api, "videoPath:", videoPath);
-    logToTerminal(api, "startDate", startDate);
-    logToTerminal(api, "endDate:", endDate);
-    logToTerminal(api, "range:", range);
-    logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
-    logToTerminal(api, "chunkSize:", `${contentLength}`);
-    logToTerminal(api, "percentage:", `${percentLoaded}`);
-    logToTerminal(
-      api,
-      "duration:",
-      `${endDate.getTime() - startDate.getTime()}`
-    );
+    // const endDate = new Date();
+    // logToTerminal(api, "userId:", userId);
+    // logToTerminal(api, "videoPath:", videoPath);
+    // logToTerminal(api, "startDate", startDate);
+    // logToTerminal(api, "endDate:", endDate);
+    // logToTerminal(api, "range:", range);
+    // logToTerminal(api, "chunks:", `${start}`, " => ", `${end}`);
+    // logToTerminal(api, "chunkSize:", `${contentLength}`);
+    // logToTerminal(api, "percentage:", `${percentLoaded}`);
+    // logToTerminal(
+    //   api,
+    //   "duration:",
+    //   `${endDate.getTime() - startDate.getTime()}`
+    // );
 
     if (typeof userId === "string") {
       setUserWatchingShowData(userId, relativePath, parseFloat(percentLoaded));
