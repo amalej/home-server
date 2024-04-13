@@ -3,27 +3,38 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import HomePage from "./pages/Home/HomePage";
 import ShowsPage from "./pages/Shows/ShowsPage";
 import UploadPage from "./pages/Upload/UploadPage";
+import NavOverlay from "./components/NavOverlay/NavOverlay";
+import ShowDetails from "./pages/Shows/ShowDetails/ShowDetails";
+import IssuesPage from "./pages/Issues/IssuesPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <NavOverlay child={<HomePage />} />,
   },
   {
     path: "/home",
-    element: <HomePage />,
+    element: <NavOverlay child={<HomePage />} />,
+  },
+  {
+    path: "/shows",
+    element: <NavOverlay child={<ShowsPage />} />,
   },
   {
     path: "/shows/*",
-    element: <ShowsPage />,
+    element: <NavOverlay child={<ShowDetails />} />,
   },
   {
     path: "/upload",
-    element: <UploadPage />,
+    element: <NavOverlay child={<UploadPage />} />,
+  },
+  {
+    path: "/issues",
+    element: <NavOverlay child={<IssuesPage />} />,
   },
   {
     path: "/about",
-    element: <div>About</div>,
+    element: <NavOverlay child={<div>About</div>} />,
   },
 ]);
 

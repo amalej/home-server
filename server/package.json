@@ -5,9 +5,9 @@
   "main": "build/index.js",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "build": "tsc",
+    "build": "webpack",
     "build:watch": "tsc --watch",
-    "start:nodemon": "node ./node_modules/nodemon/bin/nodemon.js",
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,16 +17,19 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.11",
-    "@types/node": "^15.6.2",
+    "@types/node": "^15.14.9",
     "nodemon": "^3.0.2",
+    "ts-loader": "^9.5.1",
     "ts-node": "^10.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "webpack": "^5.91.0"
   }
 }

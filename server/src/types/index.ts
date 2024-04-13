@@ -14,3 +14,11 @@ export interface UserData {
     percentLoaded: number;
   };
 }
+
+type IssueReportType = "bug" | "feature-request" | "feedback";
+
+export interface IssueReport {
+  id: string;
+  type: IssueReportType;
+  description: string;
+}

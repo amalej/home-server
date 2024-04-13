@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { expressEndpoint } from "../../../config";
+import { serverEndpoint } from "../../../config";
 import {
   getActiveShowData,
   getUserId,
@@ -25,7 +25,7 @@ function VideoWidget() {
     [count, setCount] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => ticking && setCount(count + 1), 2500);
+    const timer = setTimeout(() => ticking && setCount(count + 1), 1000);
     return () => clearTimeout(timer);
   }, [count, ticking]);
 
@@ -44,14 +44,15 @@ function VideoWidget() {
   }, [count]);
 
   useEffect(() => {
-    const endpoint = `${expressEndpoint}/api/v1/subtitles?relativePath=${relativePath}&parent=${parent}&uid=${userId}`;
+    const endpoint = `${serverEndpoint}/api/v1/subtitles?relativePath=${relativePath}&parent=${parent}&uid=${userId}`;
     fetch(endpoint)
       .then(async (res) => {
         const textContent = await res.text();
         const subtitlePaths = JSON.parse(textContent);
         const subtitleDataArr: Array<ShowSubtitleData> = [];
         for (let subtitlePath of subtitlePaths) {
-          const label = subtitlePath.split("-").at(-1) || "";
+          // const label = subtitlePath.split("-").at(-1) || "";
+          const label = subtitlePath.split("-")[-1] || "";
           subtitleDataArr.push({
             path: subtitlePath,
             label: label.replace(".vtt", ""),
@@ -63,14 +64,14 @@ function VideoWidget() {
   }, []);
 
   function getVideoUrl() {
-    return `${expressEndpoint}/api/v1/video?relativePath=${relativePath}&parent=${parent}&uid=${userId}`;
+    return `${serverEndpoint}/api/v1/video?relativePath=${relativePath}&parent=${parent}&uid=${userId}`;
   }
 
   function getSubtitleUrl(subtitleRelativePath: string) {
     const queryParameters = new URLSearchParams(window.location.search);
     const parent = queryParameters.get("parent");
     const userId = getUserId();
-    return `${expressEndpoint}/api/v1/subtitle-file?relativePath=${subtitleRelativePath}&parent=${parent}&uid=${userId}`;
+    return `${serverEndpoint}/api/v1/subtitle-file?relativePath=${subtitleRelativePath}&parent=${parent}&uid=${userId}`;
   }
 
   function getTimeStamp() {
@@ -118,7 +119,6 @@ function VideoWidget() {
       )}
       <video
         className={`${vwCss["video-player"]}`}
-        crossOrigin="anonymous"
         onPlay={(e) => {
           const activeMovieData = getActiveShowData();
           if (activeMovieData.name !== relativePath) {

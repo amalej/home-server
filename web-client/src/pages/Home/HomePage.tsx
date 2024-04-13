@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TopNav from "../../components/TopNav/TopNav";
 import hpCss from "./HomePage.module.css";
-import { expressEndpoint } from "../../config";
+import { serverEndpoint } from "../../config";
 import { getUserId } from "../../util";
 import { UserData } from "../../types";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -19,7 +19,7 @@ function HomePage() {
   }, [count, ticking]);
 
   useEffect(() => {
-    const fetchEndpoint = `${expressEndpoint}/api/v1/user-data`;
+    const fetchEndpoint = `${serverEndpoint}/api/v1/user-data`;
     fetch(fetchEndpoint, {
       headers: {
         "x-user-id": getUserId(),
@@ -37,7 +37,7 @@ function HomePage() {
   }, [count]);
 
   function deleteUserData() {
-    const fetchEndpoint = `${expressEndpoint}/api/v1/user-data?uid=${getUserId()}`;
+    const fetchEndpoint = `${serverEndpoint}/api/v1/user-data?uid=${getUserId()}`;
     fetch(fetchEndpoint, {
       method: "delete",
       headers: {
@@ -56,7 +56,6 @@ function HomePage() {
 
   return (
     <div>
-      <TopNav />
       <div className={`${hpCss["user-data-container"]}`}>
         {Object.keys(userDataMap).map((userId) => {
           const userData = userDataMap[userId];

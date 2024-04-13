@@ -11,10 +11,10 @@ export const corsOptions = {
 };
 
 export const webClientPath = isProd
-  ? path.join(__dirname, "..", "..", `${process.env.WEB_CLIENT_BUILD_DIR}`)
+  ? path.join(__dirname, "..", `${process.env.WEB_CLIENT_BUILD_DIR}`)
   : path.join(__dirname, "..", "..", "..", "web-client", "build");
 export const uploadPath = isProd
-  ? path.join(__dirname, "..", "..", "uploads/")
+  ? path.join(__dirname, "..", "uploads/")
   : path.join(__dirname, "..", "..", "..", "uploads/");
 
 export const hostAddress = findHostAddress();

@@ -85,17 +85,27 @@ fs.writeFileSync(path.join(outputDir, "package.json"), `{
   "description": "Home Server",
   "main": "server-build/index.js",
   "scripts": {
-    "start": "npm install & node ."
+    "start": "node ."
   },
   "dependencies": ${JSON.stringify({ ...webClientDependencies, ...serverDependencies }, null, 4)}
 }`);
 
-console.log(`Running "npm install"`)
-wrapCatch(`cd ${outputDir} & npm install`)
-console.log(`Comleted "npm install"`)
-
 console.log(`Create "shows-paths.json"`)
-fs.writeFileSync(path.join(outputDir, "shows-paths.json"), `{}`);
+fs.writeFileSync(path.join(outputDir, "shows-paths.json"), `{
+    "PATH_NAME": "ACTUAL_PATH_TO_DIRECTORY"
+}`);
+
+console.log(`Create "ignored-files.json"`)
+fs.writeFileSync(path.join(outputDir, "ignored-files.json"), `{
+    "files": [
+        ".Thumbs",
+        "$RECYCLE.BIN",
+        ".vst",
+        "Share",
+        "System Volume Information",
+        ".hiddenFolder"
+    ]
+}`);
 
 console.log(`Create "uploads"`)
 if (!fs.existsSync(uploadDir)) {

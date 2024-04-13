@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { expressEndpoint } from "../../config";
+import { serverEndpoint } from "../../config";
 import { Link } from "react-router-dom";
 import css from "../../common/common.module.css";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -10,7 +10,7 @@ function UploadPage() {
   const [uploadMessage, setUploadMessage] = useState<string>("");
 
   function getUploadEndpoint() {
-    return `${expressEndpoint}/api/v1/upload`;
+    return `${serverEndpoint}/api/v1/upload`;
   }
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -41,8 +41,6 @@ function UploadPage() {
 
   return (
     <div>
-      <TopNav />
-      <br />
       <div>
         <input
           type="file"

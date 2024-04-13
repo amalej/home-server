@@ -15,3 +15,10 @@ export interface ShowSubtitleData {
   path: string;
   label: string;
 }
+
+type APIStatus = "success" | "error" | "loading";
+export interface APIResponse {
+  status: APIStatus;
+  code: number;
+  body: string;
+}

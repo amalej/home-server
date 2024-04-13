@@ -1,12 +1,12 @@
-import express from "express";
+import { Router } from "express";
 import v1 from "./v1";
 
-const api = express();
-const router = express.Router();
+const api = Router();
 
-api.get("/api", function (req, res, next) {
+api.get("/", function (req, res, next) {
   return res.send("api");
 });
-api.use("/api/v1", v1);
+
+api.use("/v1", v1);
 
 export default api;

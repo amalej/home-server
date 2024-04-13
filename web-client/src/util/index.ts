@@ -25,6 +25,11 @@ export function resetActiveMovie(movieName: string) {
   localStorage.setItem("activevMovieTime", "0");
 }
 
+export function setActiveMovie(movieName: string) {
+  localStorage.setItem("activeMovie", movieName);
+  localStorage.setItem("activevMovieTime", "0");
+}
+
 export function setActiveMovieTime(seconds: number) {
   localStorage.setItem("activevMovieTime", seconds.toString());
 }
