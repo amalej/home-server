@@ -22,3 +22,8 @@ export interface APIResponse {
   code: number;
   body: string;
 }
+
+export interface ShowData {
+  name: string;
+  parent: string;
+}

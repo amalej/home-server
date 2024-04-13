@@ -20,7 +20,6 @@ export function useGetShowPoster(
 
   useEffect(() => {
     if (isOnScreen && poster === null) {
-      console.log(showPath);
       getPoster();
     }
   }, [isOnScreen]); // eslint-disable-line react-hooks/exhaustive-deps
