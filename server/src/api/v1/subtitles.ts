@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { getParentDirectory, readPathInParentDir } from "../../utils";
 import path from "path";
-import { readFile } from "fs/promises";
 
 const subtitles = Router();
 

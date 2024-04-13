@@ -107,6 +107,9 @@ fs.writeFileSync(path.join(outputDir, "ignored-files.json"), `{
     ]
 }`);
 
+console.log(`Create "issue-reports.json"`)
+fs.writeFileSync(path.join(outputDir, "issue-reports.json"), `{}`);
+
 console.log(`Create "uploads"`)
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);

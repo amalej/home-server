@@ -32,7 +32,7 @@ shows.get("/", async (req, res, next) => {
           }
         } catch (error) {}
       }
-      await wait(1000);
+      // await wait(1000);
       return res.type("json").send({ shows: showsParentList });
     }
   } catch (error) {
@@ -57,7 +57,7 @@ shows.get("/:showPath(*)?", async (req, res, next) => {
     children = children.filter(
       (child) => !ignoredFiles.includes(child) && !child.match(ignoredPattterns)
     );
-    await wait(1000);
+    // await wait(1000);
     return res.json({
       exists: true,
       showPath: showPath,
