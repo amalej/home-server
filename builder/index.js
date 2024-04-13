@@ -86,9 +86,10 @@ fs.writeFileSync(path.join(outputDir, "package.json"), `{
   "main": "server-build/index.js",
   "scripts": {
     "start": "node ."
-  },
-  "dependencies": ${JSON.stringify({ ...webClientDependencies, ...serverDependencies }, null, 4)}
+  }
 }`);
+
+// "dependencies": ${JSON.stringify({ ...webClientDependencies, ...serverDependencies }, null, 4)}
 
 console.log(`Create "shows-paths.json"`)
 fs.writeFileSync(path.join(outputDir, "shows-paths.json"), `{
