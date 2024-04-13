@@ -28,12 +28,13 @@ function ShowDetails() {
     const basePath = fullPath
       .replace(/(?=\?)(.*)/gim, "")
       .replace(/(?<=).+?(?<=shows\/)/, "");
-    // const newBasePath = basePath.split("/").slice(1).at(-1);
-    const newBasePath = basePath.split("/").slice(1)[-1];
-    if (newBasePath === undefined || newBasePath === "") {
+    const pathArr = basePath.split("/") as string[];
+    console.log(pathArr);
+    const parentPath = pathArr[pathArr.length - 1];
+    if (parentPath === undefined || parentPath === "" || pathArr.length <= 1) {
       return `shows`;
     } else {
-      return newBasePath;
+      return decodeURIComponent(parentPath);
     }
   }
   function getShowName() {
@@ -44,10 +45,6 @@ function ShowDetails() {
     const name = relativePath.split("/")[1] || "";
     return decodeURIComponent(name);
   }
-
-  const moviePath = getActiveShowData();
-  console.log("moviePath");
-  console.log(moviePath);
 
   function goUpADirectory() {
     const fullPath = window.location.href;
@@ -62,6 +59,32 @@ function ShowDetails() {
       navigate(newPath);
     }
   }
+
+  const isLastWatched = (showPath: string, watch: string) => {
+    const moviePath = getActiveShowData();
+    const [dirPath, watchPath] = moviePath.name?.split("?watch=") as string[];
+
+    const sdrShowPath = `/${JSON.parse(showDetailsRequest.body).showPath}`;
+    if (dirPath === showPath && decodeURIComponent(dirPath) === sdrShowPath) {
+      if (
+        watchPath.startsWith(watch) ||
+        watchPath.startsWith(encodeURIComponent(watch))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const isPathToLastWatched = (showPath: string) => {
+    const moviePath = getActiveShowData();
+    const [dirPath] = moviePath.name?.split("?watch=") as string[];
+
+    if (dirPath.startsWith(showPath)) {
+      return true;
+    }
+    return false;
+  };
 
   function renderChildren(): ReactJSXElement {
     try {
@@ -117,7 +140,11 @@ function ShowDetails() {
             if (child.endsWith(".mp4") || child.endsWith(".mkv")) {
               return (
                 <Link
-                  className={`${sdCss["show-item"]}`}
+                  className={`${sdCss["show-item"]} ${
+                    isLastWatched(`/${showPath}`, child)
+                      ? sdCss["last-watched-show"]
+                      : ""
+                  }`}
                   key={`show-details-${child.toLocaleLowerCase()}`}
                   to={`/shows/${showPath}?parent=${parent}&watch=${child}`}
                 >
@@ -128,7 +155,11 @@ function ShowDetails() {
             } else {
               return (
                 <Link
-                  className={`${sdCss["show-item"]}`}
+                  className={`${sdCss["show-item"]} ${
+                    isPathToLastWatched(`/${showPath}/${child}`)
+                      ? sdCss["last-watched-path"]
+                      : ""
+                  }`}
                   key={`show-details-${child.toLocaleLowerCase()}`}
                   to={`/shows/${showPath}/${child}?parent=${parent}`}
                 >

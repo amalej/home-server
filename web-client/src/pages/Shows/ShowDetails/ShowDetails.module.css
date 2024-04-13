@@ -78,3 +78,11 @@
 .hidden {
   visibility: hidden;
 }
+
+.last-watched-show {
+  background-color: #1976d2;
+}
+
+.last-watched-path {
+  background-color: #1976d2;
+}

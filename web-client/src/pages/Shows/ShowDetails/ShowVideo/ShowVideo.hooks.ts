@@ -21,7 +21,6 @@ export function useGetVideoProperties() {
 
   useEffect(() => {
     async function makeRequest() {
-      await new Promise((res, rej) => setTimeout(res, 3000));
       const params = new URL(window.location.href).searchParams;
       const watch = params.get("watch");
       if (watch) {

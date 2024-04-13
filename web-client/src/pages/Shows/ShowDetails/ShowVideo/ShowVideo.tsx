@@ -80,37 +80,6 @@ function ShowVideo() {
             );
           })}
         </video>
-        {/* <div className={svCss["video-controls"]}>
-      <button
-        className="controls__button toggleButton"
-        title="Toggle Play"
-        onClick={() => {
-          const el = videoElem.current;
-          if (el) {
-            el.play();
-          }
-        }}
-      >
-        <PlayArrowIcon />
-      </button>
-      <button
-        className="controls__button toggleButton"
-        title="Toggle Play"
-        onClick={() => {
-          const el = divElem.current;
-          if (el) {
-            if (isFullScreen) {
-              document.exitFullscreen();
-            } else {
-              el.ariaOrientation = "horizontal";
-              el.requestFullscreen();
-            }
-          }
-        }}
-      >
-        {isFullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-      </button>
-    </div> */}
       </div>
     );
   }
