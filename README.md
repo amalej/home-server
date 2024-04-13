@@ -13,6 +13,23 @@ This is a home server for movie hosting that uses the Node.js `express` library.
    - This is used to tell the application what directories to read
 1. Add paths in `ignored-files.json`, add new files in `files` property
    - This is used to tell the application what files/directories to ignore
+1. All shows must be in the top level of the path `value` in `shows-paths.json`
+1. Create a folder for each show like:
+
+```
+Futurama // Folder
+├── Season 1
+│   ├── Season 1 episode 1
+│   ├── Season 1 episode 2
+│   └──...
+│
+├── Season 2
+│   ├── Season 2 episode 1
+│   ├── Season 2 episode 2
+│   └──...
+│
+└── poster.jpg // If added, will show the poster instead of the show name
+```
 
 ## Start server and client
 
