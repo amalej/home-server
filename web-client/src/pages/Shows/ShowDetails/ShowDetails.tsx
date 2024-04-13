@@ -29,7 +29,6 @@ function ShowDetails() {
       .replace(/(?=\?)(.*)/gim, "")
       .replace(/(?<=).+?(?<=shows\/)/, "");
     const pathArr = basePath.split("/") as string[];
-    console.log(pathArr);
     const parentPath = pathArr[pathArr.length - 1];
     if (parentPath === undefined || parentPath === "" || pathArr.length <= 1) {
       return `shows`;
@@ -80,7 +79,10 @@ function ShowDetails() {
     const moviePath = getActiveShowData();
     const [dirPath] = moviePath.name?.split("?watch=") as string[];
 
-    if (dirPath.startsWith(showPath)) {
+    if (
+      dirPath.startsWith(showPath) ||
+      decodeURIComponent(dirPath).startsWith(decodeURIComponent(showPath))
+    ) {
       return true;
     }
     return false;
